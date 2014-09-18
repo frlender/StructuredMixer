@@ -1,0 +1,17 @@
+{
+  "name": "StructuredMixer",
+  "version": "0.0.1",
+  "description": "schedule meet",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": "0.10.x"
+  },
+  "author": "Qiaonan Duan",
+  "license": "ISC"
+}

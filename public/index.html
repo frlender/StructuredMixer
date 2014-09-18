@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="http://d3js.org/d3.v3.js"></script>
+<script src="scripts/js/underscore-min.js"></script>
+<script src="scripts/js/backbone-min.js"></script>
+<script src="scripts/app/Select.js"></script>
+<script src="scripts/app/submitButton.js"></script>
+<!-- <script src="scripts/app/getNetwork.js"></script> -->
+<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
+<style>
+
+path.link {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+
+circle {
+  fill: #ccc;
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+text {
+  fill: #000;
+  font: 10px sans-serif;
+  pointer-events: none;
+}
+
+ .button-secondary {
+            background: rgb(66, 184, 221); /* this is a light blue */
+            color:white;
+            width:10em;
+        }
+
+  .customHeader{
+    background: black;
+    color:white;
+  }
+
+  #left{
+    display: inline-block;
+    margin-left: 0.5em;
+  }
+
+  #right{
+    display: inline-block;
+    display: inline-block;
+  vertical-align: top;
+  margin-top: 0.3em;
+margin-left: 1em;
+text-align: center;
+  }
+
+  #submit{
+    width:14.3em;
+  }
+
+  tbody{
+    font-size:0.8em;
+  }
+
+</style>
+<body>
+<div class="pure-menu pure-menu-open pure-menu-horizontal" style="color:white;background:black">
+    <span class="pure-menu-heading" style="color:white;text-transform:none;">StructuredMixer</span>
+    <ul style="font-size:0.75em;margin-left:15em">
+    <li class=""> <span id='chosenCount'>0</span> out of <span id='totalCount'></span> submitted their choices.</li>
+    </ul>
+</div>
+
+<div style="width:1090px">
+
+<div id='left' class="pure-form pure-form-stacked">
+<select id="self">
+
+</select>
+<select id="choice1">
+
+</select>
+<select id="choice2">
+
+</select>
+<select id="choice3">
+
+</select>
+<button id='submit' class="pure-button button-secondary pure-button-disabled">Submit</button>
+</div>
+<div id='right'>
+<table class="pure-table ">
+    <thead>
+        <tr>
+            <th>Session 1</th>
+            <th>Session 2</th>
+            <th>Session 3</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        
+    </tbody>
+</table>
+</div>
+</div>
+</body>
+
+<script>
+    var selfSelect = new Select({ID:"self",noneOption:"Your Name",eventName:"NameChosen"});
+    var choice1Select = new Select({ID:"choice1",noneOption:"First Pick",eventName:"choice1Picked"});
+    var choice2Select = new Select({ID:"choice2",noneOption:"Second Pick",eventName:"choice2Picked"});
+    var choice3Select = new Select({ID:"choice3",noneOption:"Third Pick",eventName:"choice3Picked"});
+
+    var updateTable = function(){ 
+    d3.json(document.URL+'getSchedule',function(res){
+      var tbody = d3.select('tbody');
+      var vals = _.zip.apply(_,res);
+      var tr = tbody.selectAll('tr').data(vals)
+          
+      tr.selectAll('td').data(function(d){return d;}).text(function(d){return _.sortBy(d,_.identity).join(', ');});
+    });}
+
+    var updateChosenCount = function(){
+      d3.json(document.URL+'initialize',function(res){
+         d3.select('#chosenCount').text(res.pickedCount);
+      });
+    };
+
+    submitButton.initialize({updateTable:updateTable,updateChosenCount:updateChosenCount});
+    submitButton.listenTo(selfSelect,"NameChosen",function(eventData){submitButton.updateStatus(3,eventData)});
+    submitButton.listenTo(choice1Select,"choice1Picked",function(eventData){submitButton.updateStatus(0,eventData)});
+    submitButton.listenTo(choice2Select,"choice2Picked",function(eventData){submitButton.updateStatus(1,eventData)});
+    submitButton.listenTo(choice3Select,"choice3Picked",function(eventData){submitButton.updateStatus(2,eventData)});
+
+    d3.json(document.URL+'initialize',function(res){
+      res.names.sort();
+      selfSelect.populate(res.names);
+      choice1Select.populate(res.names);
+      choice2Select.populate(res.names);
+      choice3Select.populate(res.names);
+      d3.select('#chosenCount').text(res.pickedCount);
+      d3.select('#totalCount').text(res.totalCount);
+      
+    });
+
+
+    var initializeTable = function(){ 
+    d3.json(document.URL+'getSchedule',function(res){
+      var tbody = d3.select('tbody');
+      var vals = _.zip.apply(_,res);
+      var tr = tbody.selectAll('tr').data(vals).enter().append('tr');
+          
+      tr.selectAll('td').data(function(d){return d;}).enter().append('td')
+          .text(function(d){return _.sortBy(d,_.identity).join(', ');});
+    });}
+
+    initializeTable();
+
+   
+
+    
+</script>
+</html>
