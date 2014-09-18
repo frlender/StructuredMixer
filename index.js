@@ -10,13 +10,13 @@
 
   app.set('port', process.env.PORT || 5000);
 
-  app.use('/StructuredMixer', express["static"](__dirname + '/public'));
+  app.use('/', express["static"](__dirname + '/public'));
 
-  app.get('/StructuredMixer/getSchedule', rh.getSchedule);
+  app.get('/getSchedule', rh.getSchedule);
 
-  app.get('/StructuredMixer/submitPreference', rh.submitPreference);
+  app.get('/submitPreference', rh.submitPreference);
 
-  app.get('/StructuredMixer/initialize', rh.initialize);
+  app.get('/initialize', rh.initialize);
 
   app.listen(app.get('port'), function() {
     return console.log("Running at:" + app.get('port'));
